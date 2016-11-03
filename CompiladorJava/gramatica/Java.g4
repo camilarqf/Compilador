@@ -4,11 +4,19 @@ grammar Java;
 
 start:	pck? imports* dec_classe; 
 
-pck:	PACKAGE ID ('.' ID)* ';' ;
+pck:	PACKAGE nomes ;
 
-imports: IMPORT ID ('.' ID)* ';' ;
+imports: IMPORT nomes ;
 
-dec_classe: mod_classe? CLASS ID  (EXTENDS ID)? (IMPLEMENTS ID)? corpo_classe?;
+nomes: ID ('.' ID)* ';';
+
+dec_classe: mod_classe? CLASS identificador (EXTENDS identificador)? (IMPLEMENTS identificador)? corpo_classe?;
+
+identificador: ID;
+
+dec_met_main: mod_classe STATIC VOID identificador param corpo_classe ;
+
+param : '('dec_var_main ')';
 
 mod_classe: (PUBLIC
 			|PRIVATE
@@ -18,62 +26,119 @@ mod_classe: (PUBLIC
 			|ABSTRACT) ;
 			
 
-corpo_classe:	'{'dec_main|dec_var|dec_metodo |dec_classe|statement'}';
+corpo_classe:	'{' dec_corpo_classe* '}';
 
-dec_main: 'public' STATIC VOID 'main' '(''String' '['']' ID  ')' corpo_main?;
+dec_corpo_classe: dec_metodo|dec_classe|bloco ;
 
-corpo_main: 	'{' dec_var| statement '}';
+corpo_main: 	'{' dec_var| bloco '}';
 
-dec_metodo:	MOD_METODO (VOID|TIPO) IDMETODO '(' (TIPO ID (',' TIPO ID)*)? ')' corpo_metodo? ;
+dec_metodo:	mod_metodo (VOID|tipo) identificador '(' (tipo identificador (',' tipo identificador)*)? ')' corpo_metodo?
+                |dec_met_main ;
 
-corpo_metodo: '{' dec_var|statement  (RETURN expr ';')? '}';
+mod_metodo: ('PUBLIC'
+             |'PRIVATE'
+             |'PROTECTED'
+             |'STATIC');
 
-dec_var: 	TIPO ID (',' ID)* ';'
-			|atribuir;
+corpo_metodo: '{' dec_var|bloco  (RETURN expr ';')? '}';
 
-atribuir: TIPO ID (',' ID)* OP_ATR (ID|INT|DOUBLE_FLOAT) ';';
+dec_var: 	tipo identificador (',' identificador)* ';'
+                |tipo identificador ('['']')*';'
+		|expr;
 
-statement: (cond_if
-		|loop_for
-		|loop_while
-		|cond_switch
-		|escreva
-		|IDSTRING '=' expr ';'
-		|'{'statement'}'
-		|expr);
+dec_var_main: tipo identificador ('['']')*
+              |tipo ('['']')* identificador  ;
+
+atribuir: tipo identificador (',' identificador)* op_atr (identificador|INT|DOUBLE_FLOAT) ';'
+          |tipo identificador op_atr (identificador|INT|DOUBLE_FLOAT) ';'
+          |identificador op_atr (identificador|INT|DOUBLE_FLOAT) ';'
+          |tipo? identificador op_atr expr  ;
+
+bloco: (dec_var
+       | cond_if
+       |loop_for
+       |loop_while
+       |cond_switch
+       |saida
+       |'{'bloco'}'
+       |expr);
 		
-cond_if: IF '(' expr ')' statement (ELSE statement)?;
+cond_if: IF '(' expr ')' bloco (ELSE bloco)?;
 
-loop_for: FOR '(''int' ID '=' INT ';' ID('.' 'lenght')? ('<'|'>') (ID|INT) ';' ID('++'|'--') statement;
+loop_for: FOR '(''int' identificador '=' INT ';' identificador('.' 'lenght')? ('<'|'>') literal ';' ID('++'|'--') bloco;
 
-loop_while: WHILE '(' expr ')' statement ; 
+loop_while: WHILE '(' expr ')' bloco ; 
 
-cond_switch: SWITCH '(' expr ')' statement (CASE ID ':' statement BREAK';')* (DEFAULT statement)?;
+cond_switch: SWITCH '(' expr ')' bloco (CASE identificador ':' bloco BREAK';')* (DEFAULT bloco)?;
 
-escreva: 'System' '.' 'out' '.' ('print'|'printf'|'println') '(' ('"' ID* '"'|INT|DOUBLE_FLOAT) ')'';'  ;
+saida: 'System' '.' OUT '.' tipo_print ';'  ;
 
+tipo_print: print
+            |printf;
 
-expr: ( idexpr OP <assoc=right> idexpr
-		|idexpr '.' ID '(' (idexpr (',' idexpr)*)?')'
-		|ID_CLASSE IDSTRING '=' NEW TIPO ID '(' ID? ')' ';'
-		|idexpr '.' ID
-		|idexpr '[' idexpr ']'
-		|idexpr '?' idexpr ':' idexpr
-		|'!'idexpr
-		|idexpr '++'
-		|idexpr '--'
-		|ID
-		|INT
-		|DOUBLE_FLOAT );
+print:  PRINT|PRINTLN '(' ('"' literal* '"' |literal) (('+' '"' literal* '"'|literal)* )')' ;
 
-idexpr: ID
+printf: PRINTF '(' '"' MASCARA* '"' (',' identificador)*  ')' ;
+
+expr:  expr op_A term ';'?
+        |literal '.' identificador '(' (literal (',' literal)*)?')'
+	|identificador '=' NEW tipo identificador '(' identificador? ')' ';'
+	|literal '.' identificador
+	|literal '[' literal ']'
+	|literal '?' literal ':' literal
+	|'!'literal
+	|literal '++'
+	|literal '--'
+	|identificador
+        |term
+        |literal
+        |atribuir
+	|INT
+	|DOUBLE_FLOAT ;
+
+term:  literal op_B expr
+        |literal ; 
+
+literal: ID
 	|INT
 	|DOUBLE_FLOAT;
 	
-	
-	
+tipo: 	INTEIRO
+	|DOUBLE
+	|STRING
+	|CHAR
+	|FLOAT
+	|BOOLEAN
+	|LONG
+	|SHORT ;	
+
+op_A: MAIS
+    |MENOS
+    |E
+    |OU
+    |MAIOR_IG
+    |MENOR_IG
+    |DIF
+    |IG
+    |MAIOR
+    |MENOR ;
+    
+op_B:MULT
+    |DIV
+    |SHIFTR
+    |SHIFTL
+    |MOD ;	
+
+op_atr: ATR
+        |MAIS_ATR
+        |MENOS_ATR
+        |MULT_ATR
+        |DIV_ATR
+        |MOD_ATR ;
 	
 // ------------------- TOKENS -------------------------------
+
+
 				
 PACKAGE:	'package';
 IMPORT:		'import';
@@ -103,65 +168,82 @@ CATCH:		'catch';
 SUPER:		'super';
 THIS:		'this';
 THROW:		'throw';
-DO:			'do';
+DO:		'do';
 TRUE: 		'true';
 FALSE:		'false';
 INSTANCEOF: 'instanceof';
-
-
-
-MOD_METODO: ('public'
-			|'private'
-			|'protected'
-			|'static');
+INTEIRO:        'int';
+DOUBLE:         'double';
+FLOAT:          'float';
+STRING:         'String';
+CHAR:           'char';
+LONG:           'long';
+BOOLEAN:        'boolean';
+SHORT:          'short';
+PRINT:          'print';
+PRINTLN:        'println';
+PRINTF:         'printf';
+OUT:            'out';
 			
 PONT: (','
 	|':'
 	|';');			
 	
-ID	: [A-Za-z_0-9*]*;
+ID: [A-Za-z_*!]+
+    |IDCLASSE
+    |IDVAR;
+
+fragment IDCLASSE: [A-Z][a-z]+;
+
+fragment IDVAR: [a-z_]+;
+ 
+TIPO: 	'int'
+	|'double'
+	|'String'
+	|'char'
+	|'float'
+	|'boolean'
+	|'long'
+	|'short';
+
+MASCARA: '%d'
+         |'%s'
+         |'%f' ;
+
+INT: [0-9]*
+     |INT_NEG;
+
+fragment INT_NEG : '-'[0-9]* ;
+
+DOUBLE_FLOAT: [0-9]'.'[0.9]*
+            |DOUBLE_FLOAT_NEG;
+
+fragment DOUBLE_FLOAT_NEG: '-'[0-9]'.'[0.9]* ;
 
 
-IDMETODO:[a-z]*;
+MAIS:   '+';
+MENOS:  '-';
+MULT:   '*';
+DIV:    '/';
+E:      '&&';
+OU:     '||';
+MAIOR_IG:   '>=';
+MENOR_IG:   '<=';
+SHIFTR: '>>';
+SHIFTL: '<<';
+MOD:    '%';
+DIF:    '!=';
+IG:     '==';
+MAIOR:  '>';
+MENOR:  '<';
 
-TIPO: 	('int'
-		|'double'
-		|'String'
-		|'char'
-		|'float'
-		|'boolean'
-		|'long'
-		|'short');
-		
+ATR:    '=';
+MAIS_ATR: '+=';
+MENOS_ATR: '-=';
+MULT_ATR: '*=';
+DIV_ATR: '/=';
+MOD_ATR: '%=';
 
-INT: '-'?[0-9]+;
-
-STRING: [A-Za-z]+;
-
-DOUBLE_FLOAT: '-'?[0-9]'.'[0.9]+;
-
-OP:	('+'
-	|'-'
-	|'*'
-	|'/'
-	|'&&'
-	|'||'
-	|'>='
-	|'<='
-	|'>>'
-	|'<<'
-	|'%'
-	|'!='
-	|'=='
-	|'<'	
-	|'>');
-	
-OP_ATR: ('='
-		|'+='
-		|'-='
-		|'*='
-		|'/='
-		|'%=');
 		
 SEPARADOR: ('{'
 			|'}'
@@ -172,3 +254,7 @@ SEPARADOR: ('{'
 
 	
 WS : [ \t\r\n]+ -> skip ;
+
+COMENTARIO: '/*' .*? '*/' -> skip ;
+
+COMENTARIO_LINHA: '//' ~[\r\n]* -> skip ;
