@@ -7,6 +7,7 @@ MODO DE USO
 2 - Baixar o projeto CompiladorJava
 
 3- Windows: Abrir a pasta jar e dar dois cliques com o botão esquerdo do mouse em CompiladorJar ou clique com o botão direito do mouse e vai em "abrir com" e selecione Java (TM) Platform SE binary
+
 Linux: vá até a pasta jar e execute o comando no terminal: java -jar CompiladorJava.jar
 
 4 - Ao abrir o programa vá em Arquivo > Abrir
