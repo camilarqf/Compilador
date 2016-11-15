@@ -26,4 +26,5 @@ Linux: vá até a pasta jar e execute o comando no terminal: java -jar Compilado
 
 
 ** A arvore de parsing pode demorar alguns segundos para ser gerada
+
 ** Esse compilador reconhece apenas linguagem Java
