@@ -356,8 +356,7 @@ public interface JavaListener extends ParseTreeListener {
 	 */
 	void exitOp_atr(JavaParser.Op_atrContext ctx);
         
-        
-         public static class VerboseListener extends BaseErrorListener {
+        public static class VerboseListener extends BaseErrorListener {
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer,

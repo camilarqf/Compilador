@@ -31,7 +31,7 @@ Main m = new Main();
             JavaLexer lexer = new JavaLexer(input); // criar analisador lexico
             CommonTokenStream tokens = new CommonTokenStream(lexer); // obter tokens
             JavaParser parser = new JavaParser(tokens);
-                       
+               
             //gerar parsetree
             ParseTree tree = parser.start();           
                  
@@ -39,7 +39,8 @@ Main m = new Main();
            m.texto = "=================================\nTOKENS\n=================================\n";
             for (int i = 0; i < tokens.size(); i++) {
                 m.texto += tokens.get(i) +"\n";
-                //System.out.println(tokens.get(i));
+               
+                
             }
         } catch (IOException ex) {
             Logger.getLogger(Lexico.class.getName()).log(Level.SEVERE, null, ex);

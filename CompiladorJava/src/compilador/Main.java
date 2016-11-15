@@ -62,6 +62,8 @@ public class Main extends javax.swing.JFrame {
 
         textareaCod.setColumns(20);
         textareaCod.setRows(5);
+        textareaCod.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        textareaCod.setEnabled(false);
         jScrollPane1.setViewportView(textareaCod);
 
         jLabel2.setText("Sa�da:");
@@ -190,17 +192,25 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemAbrirActionPerformed
 
     private void jButtonLexicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLexicoActionPerformed
+        try{
         Lexico l = new Lexico(file.getAbsolutePath());
         jTextAreaSaida.setText(texto);
         jTextAreaSaida.setForeground(Color.BLACK);
         texto = "";
+        }catch(NullPointerException e){
+             JOptionPane.showMessageDialog(null,"Arquivo n�o encontrado\n Por favor, abra o arquivo Teste.txt (Arquivo > abrir > Teste.txt) que se encontra dentro da pasta CompiladorJava","ERRO",JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonLexicoActionPerformed
 
     private void jButtonSintaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSintaticoActionPerformed
+       try{
         Sintatico s = new Sintatico(file.getAbsolutePath());
         jTextAreaSaida.setText(texto);
         jTextAreaSaida.setForeground(Color.red);
         texto = "";
+        }catch(NullPointerException e){
+             JOptionPane.showMessageDialog(null,"Arquivo n�o encontrado\n Por favor, abra o arquivo Teste.txt(Arquivo > abrir > Teste.txt)  que se encontra dentro da pasta CompiladorJava","ERRO",JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonSintaticoActionPerformed
 
     private void jMenuAjudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAjudaActionPerformed
@@ -208,7 +218,7 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuAjudaActionPerformed
 
     private void jMenuItemAjdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAjdActionPerformed
-        JOptionPane.showMessageDialog(null, "1-Vá em Arquivo\n2-Abra o arquivo Teste.txt com o código Java\n3-O código será carregado na janela de código\n4-Para fazer análise do código clique nos botões Lexico ou Sintatico\n5-Para modificar o código é necessário modificar no arquivo .txt e depois voltar ao passo 1\n6-Lexico gera tokens e são mostrados no campo saída\n7-Sintatico gera arvore de parsing e possíveis erros encontrados sao mostrados no campo saida");
+        JOptionPane.showMessageDialog(null, "1-Vá em Arquivo\n2-Abra o arquivo Teste.txt com o código Java\n3-O código será carregado na janela de código\n4-Para fazer análise do código clique nos botões Lexico ou Sintatico\n5-Para testar outro código é necessário modificar no arquivo Teste.txt salvar o arquivo e depois voltar ao passo 1\n6-Lexico gera tokens e são mostrados no campo saída\n7-Sintatico gera arvore de parsing e possíveis erros encontrados sao mostrados no campo saida");
     }//GEN-LAST:event_jMenuItemAjdActionPerformed
 
     /**

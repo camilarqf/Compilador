@@ -10,7 +10,7 @@ imports: IMPORT nomes ;
 
 nomes: ID ('.' ID)* ';';
 
-dec_classe: mod_classe? CLASS identificador (EXTENDS identificador)? (IMPLEMENTS identificador)? corpo_classe?;
+dec_classe: mod_classe? CLASS identificador (EXTENDS identificador)? (IMPLEMENTS identificador)? corpo_classe*;
 
 identificador: ID;
 
@@ -28,7 +28,7 @@ mod_classe: (PUBLIC
 
 corpo_classe:	'{' dec_corpo_classe* '}';
 
-dec_corpo_classe: dec_metodo|dec_classe|bloco ;
+dec_corpo_classe: dec_metodo|dec_classe|bloco;
 
 corpo_main: 	'{' dec_var| bloco '}';
 
@@ -44,7 +44,7 @@ corpo_metodo: '{' dec_var|bloco  (RETURN expr ';')? '}';
 
 dec_var: 	tipo identificador (',' identificador)* ';'
                 |tipo identificador ('['']')*';'
-		|expr;
+		|atribuir;
 
 dec_var_main: tipo identificador ('['']')*
               |tipo ('['']')* identificador  ;
@@ -80,7 +80,7 @@ print:  PRINT|PRINTLN '(' ('"' literal* '"' |literal) (('+' '"' literal* '"'|lit
 
 printf: PRINTF '(' '"' MASCARA* '"' (',' identificador)*  ')' ;
 
-expr:  expr op_A term ';'?
+expr:  term (op_A expr)?';'?
         |literal '.' identificador '(' (literal (',' literal)*)?')'
 	|identificador '=' NEW tipo identificador '(' identificador? ')' ';'
 	|literal '.' identificador
@@ -90,18 +90,17 @@ expr:  expr op_A term ';'?
 	|literal '++'
 	|literal '--'
 	|identificador
-        |term
         |literal
         |atribuir
 	|INT
 	|DOUBLE_FLOAT ;
 
-term:  literal op_B expr
-        |literal ; 
+term:  literal (op_B expr)? ; 
 
 literal: ID
 	|INT
-	|DOUBLE_FLOAT;
+	|DOUBLE_FLOAT
+        |'('  expr ')';
 	
 tipo: 	INTEIRO
 	|DOUBLE
@@ -113,7 +112,10 @@ tipo: 	INTEIRO
 	|SHORT ;	
 
 op_A: MAIS
-    |MENOS
+    |MENOS ;
+    
+op_B:MULT
+    |DIV
     |E
     |OU
     |MAIOR_IG
@@ -121,13 +123,7 @@ op_A: MAIS
     |DIF
     |IG
     |MAIOR
-    |MENOR ;
-    
-op_B:MULT
-    |DIV
-    |SHIFTR
-    |SHIFTL
-    |MOD ;	
+    |MENOR ;	
 
 op_atr: ATR
         |MAIS_ATR
